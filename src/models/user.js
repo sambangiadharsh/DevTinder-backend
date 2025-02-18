@@ -76,7 +76,7 @@ userSchema.methods.hashPassword = async function () {
 };
 userSchema.methods.getJWT=async function(){
     const user=this;
-    const token = jwt.sign({ _id: user._id },"ADHARSH123", { expiresIn: "1h" });
+    const token = jwt.sign({ _id: user._id },process.env.JWT_SECRET, { expiresIn: "1h" });
     return token;
 }
 

@@ -8,6 +8,7 @@ const profileRouter=require("./routes/profileRouter");
 const requestRouter=require("./routes/requestRouter")
 const userRouter=require("./routes/userRoute");
 const cors=require("cors");
+require("dotenv").config();
 
 const cookieParser = require("cookie-parser");
 app.use(cors({
@@ -25,7 +26,7 @@ app.use("/",userRouter);
 
 connectdb().then(()=>{
     console.log("db connected");
-    app.listen(3000,()=>{
+    app.listen(process.env.PORT,()=>{
         console.log("sever is running");
     });
 }).catch((err)=>console.log("error in connecting"));

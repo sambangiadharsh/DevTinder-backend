@@ -90,7 +90,7 @@ userRouter.get("/feed",userAuth,async(req,res)=>{
             hiddenusers.add(req.fromUserId.toString());
             hiddenusers.add(req.toUserId.toString());
          })
-         console.log(hiddenusers);
+        
 
          const users=await User.find({
             _id:{$nin:Array.from(hiddenusers)},
