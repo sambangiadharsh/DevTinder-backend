@@ -11,7 +11,7 @@ const hashRoomId = (userId, targetUserId) => {
 const initializeSockets = (server) => {
   const io = socketIo(server, {
     cors: {
-      origin: 'http://localhost:5173',
+      origin:["http://localhost:5173", "https://tindev.duckdns.org"],
       methods: ['GET', 'POST'],
     },
   });
