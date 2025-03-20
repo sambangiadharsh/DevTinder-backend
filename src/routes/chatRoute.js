@@ -29,7 +29,7 @@ chatRouter.get('/chat/:targetUserId', userAuth, async (req, res) => {
       await oldChat.save();
     }
 
-    res.json(oldChat);
+    res.status(200).json(oldChat);
   } catch (err) {
     res.status(400).json('Error fetching chat messages');
   }

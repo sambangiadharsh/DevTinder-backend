@@ -1,73 +1,72 @@
-const socketIo = require('socket.io');
-const crypto = require('crypto');
-const { chat } = require('./models/chat');
+const socketIo = require("socket.io");
+const crypto = require("crypto");
+const { chat } = require("./models/chat");
 
 // ✅ Hash roomId for two users
 const hashRoomId = (userId, targetUserId) => {
-  const sortedIds = [userId, targetUserId].sort().join('_');
-  return crypto.createHash('sha256').update(sortedIds).digest('hex');
+  const sortedIds = [userId, targetUserId].sort().join("_");
+  return crypto.createHash("sha256").update(sortedIds).digest("hex");
 };
 
 const initializeSockets = (server) => {
   const io = socketIo(server, {
+    path: "/socket.io/", // ✅ Match Nginx path
     cors: {
-      origin:["http://localhost:5173", "https://tindev.duckdns.org"],
-      methods: ['GET', 'POST'],
+      origin: ["http://localhost:5173", "https://tindev.duckdns.org"],
+      methods: ["GET", "POST"],
+      credentials: true,
     },
   });
 
-  io.on('connection', (socket) => {
-    console.log('User connected:', socket.id);
+  io.on("connection", (socket) => {
+    console.log("User connected:", socket.id);
 
     // ✅ Join chat room
-    socket.on('joinChat', ({ userId, targetUserId }) => {
+    socket.on("joinChat", ({ userId, targetUserId }) => {
       const roomId = hashRoomId(userId, targetUserId);
       console.log(`User ${userId} joined room: ${roomId}`);
       socket.join(roomId);
     });
 
-    // ✅ Handle message sending
-    socket.on('sendMessage', async ({ text, userId, targetUserId, firstname }) => {
-      try {
-
-        //first backend check connection is between there or not(TBE)
+    // ✅ Handle message sending from client
+    socket.on(
+      "sendMessage",
+      async ({ text, userId, targetUserId, senderFirstname }) => {
         const roomId = hashRoomId(userId, targetUserId);
-        let existingChat = await chat.findOne({
+
+        // ✅ Check and fetch the existing chat
+        let newchat = await chat.findOne({
           participants: { $all: [userId, targetUserId] },
         });
 
-        // Create new chat if doesn't exist
-        if (!existingChat) {
-          existingChat = new chat({
+        if (!newchat) {
+          // ✅ Create new chat if not found
+          newchat = await chat.create({
             participants: [userId, targetUserId],
             messages: [],
           });
         }
 
-        // Save new message
-        existingChat.messages.push({
-          senderId: userId,
-          text,
-        });
-        await existingChat.save();
+        // ✅ Add the message to chat
+        newchat.messages.push({ senderId: userId, text });
+        await newchat.save();
 
-        // Emit to both users in the room
-        socket.to(roomId).emit('receivedMessage', {
-          firstname,
+        // ✅ Emit the message to both users in the room
+        io.to(roomId).emit("receivedMessage", {
+          senderFirstname,
           text,
-          time: new Date().toISOString(),
-          userId,
+          time: new Date(),
+          senderId: userId,
         });
-      } catch (err) {
-        console.error('Error sending message:', err);
       }
-    });
+    );
 
     // ✅ Handle disconnection
-    socket.on('disconnect', () => {
+    socket.on("disconnect", () => {
       console.log(`User disconnected: ${socket.id}`);
     });
   });
+
 
   return io;
 };
