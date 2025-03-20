@@ -31,6 +31,7 @@ const initializeSockets = (server) => {
     socket.on(
       "sendMessage",
       async ({ text, userId, targetUserId, senderFirstname }) => {
+        console.log("first");
         const roomId = hashRoomId(userId, targetUserId);
 
         // ✅ Check and fetch the existing chat
@@ -52,6 +53,7 @@ const initializeSockets = (server) => {
 
         // ✅ Emit the message to both users in the room
         io.to(roomId).emit("receivedMessage", {
+         
           senderFirstname,
           text,
           time: new Date(),

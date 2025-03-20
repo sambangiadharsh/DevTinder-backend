@@ -19,6 +19,7 @@ chatRouter.get('/chat/:targetUserId', userAuth, async (req, res) => {
       .populate({
         path: 'participants',
         select: 'firstName lastName',
+      
       });
 
     if (!oldChat) {
