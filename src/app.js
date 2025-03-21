@@ -1,5 +1,6 @@
 const express=require("express");
 const connectdb=require("./config/database");
+const path =require("path");
 
 const app=express();
 const authRouter=require("./routes/authRoute");
@@ -34,6 +35,13 @@ app.use("/",profileRouter);
 app.use("/",requestRouter);
 app.use("/",userRouter);
 app.use("/",chatRoute);
+
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Handle client-side routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
 const PORT = process.env.PORT || 7777; // Fallback to 7777 if PORT is not set
 
 
