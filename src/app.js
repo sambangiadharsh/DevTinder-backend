@@ -12,10 +12,17 @@ const cors=require("cors");
 require("dotenv").config();
 
 const cookieParser = require("cookie-parser");
-app.use(cors({
-    origin:["http://localhost:5173","https://devtender-frontend-fxuw.onrender.com",],
-    credentials:true,
-}));
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? ["https://devtender-frontend-fxuw.onrender.com"]
+    : ["http://localhost:5173"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true, // 
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 const http = require('http');

@@ -1,78 +1,66 @@
-const express=require("express");
-const authRouter=express.Router();
-const {userAuth}=require("../middlewares/auth");
-const {validate}=require("../utils/validate");
-const User=require("../models/user");
-const bcrypt=require("bcrypt");
+const express = require("express");
+const authRouter = express.Router();
+const { userAuth } = require("../middlewares/auth");
+const { validate } = require("../utils/validate");
+const User = require("../models/user");
+const bcrypt = require("bcrypt");
 
-authRouter.post("/signup",async(req,res)=>{
-    console.log(req.body); 
+// Cookie Options for Dev and Prod
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production", // Secure in production
+  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  maxAge: 60 * 60 * 1000, // 1 hour expiry
+};
 
+// ✅ Signup Route
+authRouter.post("/signup", async (req, res) => {
+  console.log(req.body);
 
-try{
+  try {
     validate(req);
-    
-    
-    const user=new User(req.body);
+
+    const user = new User(req.body);
     await user.hashPassword();
-    const data=await user.save();
-   
-    const token=await user.getJWT();
-    res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // True for Render
-        sameSite: "None",
-        maxAge: 60 * 60 * 1000,
-      });
-      
-    
-        
+    const data = await user.save();
+
+    const token = await user.getJWT();
+    res.cookie("token", token, cookieOptions); // ✅ Set cookie correctly
+
     res.status(201).json({
-        message:"Data inserted succesfully",
-        data,
-    })
-}
-catch(error){
+      message: "Data inserted successfully",
+      data,
+    });
+  } catch (error) {
     console.error("Error inserting user:", error.message);
-        res.status(400).send("Not inserted: " + error.message);
-}
+    res.status(400).send("Not inserted: " + error.message);
+  }
+});
 
-})
+// ✅ Login Route
+authRouter.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
 
+    const user = await User.findOne({ emailId: emailId });
 
-authRouter.post("/login",async(req,res)=>{
-    try{
-        const {emailId,password}=req.body;
-        
-        const user=await User.findOne({emailId:emailId});
-        
-        if(!user){
-            return res.status(401).send("Invalid credentials");
-        }
-     
-        const isPasswordValid=await user.validatepassword(password);
-        
-        
-        if(isPasswordValid){
-            const token=await user.getJWT();
-        res.cookie("token", token, {
-            httpOnly: true, // Prevents client-side JS access
-            secure: false, // Set `true` in production with HTTPS
-          
-            maxAge: 60 * 60 * 1000, // 1 hour expiry
-        });
-
-            res.cookie("token",token);
-
-            res.send(user);
-        }
-        else{
-            return res.status(401).send("Invalid Password");
-        }
+    if (!user) {
+      return res.status(401).send("Invalid credentials");
     }
-    catch{
-        res.status(401).send("bad request");
-    }
-})
 
-module.exports=authRouter;
+    const isPasswordValid = await user.validatepassword(password);
+
+    if (isPasswordValid) {
+      const token = await user.getJWT();
+      res.cookie("token", token, cookieOptions); // ✅ Set cookie correctly
+
+      res.send(user);
+    } else {
+      return res.status(401).send("Invalid Password");
+    }
+  } catch (error) {
+    res.status(401).send("Bad request: " + error.message);
+  }
+});
+
+module.exports = authRouter;
