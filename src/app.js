@@ -13,7 +13,7 @@ require("dotenv").config();
 
 const cookieParser = require("cookie-parser");
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:["http://localhost:5173","https://devtender-frontend-fxuw.onrender.com",],
     credentials:true,
 }));
 app.use(express.json());
@@ -27,11 +27,12 @@ app.use("/",profileRouter);
 app.use("/",requestRouter);
 app.use("/",userRouter);
 app.use("/",chatRoute);
- 
+const PORT = process.env.PORT || 7777; // Fallback to 7777 if PORT is not set
+
 
 connectdb().then(()=>{
     console.log("db connected");
-    server.listen(process.env.PORT,()=>{
+    server.listen(PORT,()=>{
         console.log("sever is running");
     });
 }).catch((err)=>console.log("error in connecting"));
