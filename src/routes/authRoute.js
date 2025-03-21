@@ -19,14 +19,13 @@ try{
    
     const token=await user.getJWT();
     res.cookie("token", token, {
-        httpOnly: true, // Prevents client-side JS access
-        secure: false, // Set `true` in production with HTTPS
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // True for Render
+        sameSite: "None",
+        maxAge: 60 * 60 * 1000,
+      });
       
-        maxAge: 60 * 60 * 1000, // 1 hour expiry
-    });
-
-    res.cookie("token",token);
-
+    
         
     res.status(201).json({
         message:"Data inserted succesfully",
