@@ -7,10 +7,10 @@ const bcrypt = require("bcrypt");
 
 // Cookie Options for Dev and Prod
 const cookieOptions = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production", // Secure in production
-  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-  maxAge: 60 * 60 * 1000, // 1 hour expiry
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // Only secure in production
+    sameSite: "Lax", // Prevents CSRF, works well with same-domain requests
+    maxAge: 60 * 60 * 1000, // 1 hour expiry
 };
 
 // ✅ Signup Route
