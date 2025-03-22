@@ -9,7 +9,7 @@ const bcrypt = require("bcrypt");
 const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production", // Only secure in production
-    sameSite: "Lax", // Prevents CSRF, works well with same-domain requests
+    sameSite: "None", // Prevents CSRF, works well with same-domain requests
     maxAge: 60 * 60 * 1000, // 1 hour expiry
 };
 
