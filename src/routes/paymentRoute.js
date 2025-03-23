@@ -23,7 +23,7 @@ paymentRouter.post("/payment/create",userAuth,async(req,res)=>{
             membershipType:membershipType
          },
       });
-      console.log(order);
+     
       const newPayment=new payment({
         userId:req.user._id,
         orderId:order.id,
@@ -96,6 +96,14 @@ paymentRouter.post("/payment/webhook",async(req,res)=>{
  catch(err){
     res.json({msg:err.message});
  }
+});
+
+paymentRouter.get("/payment/verify",userAuth,(req,res)=>{
+  const User=req.user;
+  if(User.isPremium){
+    return res.json({isPremium:true});
+  }
+  return res.json({isPremium:false});
 })
 
 module.exports=paymentRouter
