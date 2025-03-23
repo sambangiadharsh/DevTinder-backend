@@ -6,6 +6,7 @@ const authRouter=require("./routes/authRoute");
 const profileRouter=require("./routes/profileRouter");
 const requestRouter=require("./routes/requestRouter")
 const userRouter=require("./routes/userRoute");
+const paymentRouter=require("./routes/paymentRoute")
 const initializeSockets = require("./sockets");
 const chatRoute=require("./routes/chatRoute")
 const cors=require("cors");
@@ -34,6 +35,7 @@ app.use("/",profileRouter);
 app.use("/",requestRouter);
 app.use("/",userRouter);
 app.use("/",chatRoute);
+app.use("/",paymentRouter);
 
 
 const PORT=process.env.PORT || 7777

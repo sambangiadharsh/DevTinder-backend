@@ -64,6 +64,18 @@ const userSchema = mongoose.Schema({
     },
     skills: {
         type: [String]  // Correct way to define an array of strings
+    },
+    isPremium:{
+        type:Boolean,
+        defualt:false
+    },
+    membershipType:{
+        type:String,
+
+    },
+    membershipValidity:{
+        type:Date,
+        default:false
     }
 },{
     timestamps:true
