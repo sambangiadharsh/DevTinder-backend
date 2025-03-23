@@ -65,9 +65,7 @@ paymentRouter.post("/payment/webhook",async(req,res)=>{
   pay.status=paymentDetails.status;
   await pay.save();
 
-  const paymentUser=await user.findOne({
-    _id:pay.userId
-  })
+  const paymentUser=await user.findById(pay.userId)
   if (paymentDetails.status === 'captured') {
     paymentUser.isPremium = true;
     paymentUser.membershipType = pay.notes.membershipType;
