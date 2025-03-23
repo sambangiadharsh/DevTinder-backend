@@ -75,7 +75,7 @@ const userSchema = mongoose.Schema({
     },
     membershipValidity:{
         type:Date,
-        default:false
+        
     }
 },{
     timestamps:true
